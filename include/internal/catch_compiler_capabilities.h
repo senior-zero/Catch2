@@ -55,25 +55,40 @@
 #    if defined(__NVCC_DIAG_PRAGMA_SUPPORT__)
 #      if defined(__clang__)
 #        define CATCH_INTERNAL_CUDA_SUPPRESS_UNUSED_WARNINGS _Pragma( "nv_diag_suppress 177" )
+#        define CATCH_INTERNAL_CUDA_START_WARNINGS_SUPPRESSION _Pragma( "nv_diagnostic push" )
+#        define CATCH_INTERNAL_CUDA_STOP_WARNINGS_SUPPRESSION _Pragma( "nv_diagnostic pop" )
 #      elif defined(_MSC_VER)
 #        define CATCH_INTERNAL_CUDA_SUPPRESS_UNUSED_WARNINGS __pragma( nv_diag_suppress 177 )
+#        define CATCH_INTERNAL_CUDA_START_WARNINGS_SUPPRESSION __pragma( nv_diagnostic push )
+#        define CATCH_INTERNAL_CUDA_STOP_WARNINGS_SUPPRESSION __pragma( nv_diagnostic pop )
 #      endif
 #    else
 #      if defined(__clang__)
 #        define CATCH_INTERNAL_CUDA_SUPPRESS_UNUSED_WARNINGS _Pragma( "diag_suppress 177" )
+#        define CATCH_INTERNAL_CUDA_START_WARNINGS_SUPPRESSION _Pragma( "diagnostic push" )
+#        define CATCH_INTERNAL_CUDA_STOP_WARNINGS_SUPPRESSION _Pragma( "diagnostic pop" )
 #      elif defined(_MSC_VER)
 #        define CATCH_INTERNAL_CUDA_SUPPRESS_UNUSED_WARNINGS __pragma( diag_suppress 177 )
+#        define CATCH_INTERNAL_CUDA_START_WARNINGS_SUPPRESSION __pragma( diagnostic push )
+#        define CATCH_INTERNAL_CUDA_STOP_WARNINGS_SUPPRESSION __pragma( diagnostic pop )
 #      endif
 #    endif
 #else
 #    define CATCH_INTERNAL_CUDA_SUPPRESS_UNUSED_WARNINGS
+#    define CATCH_INTERNAL_CUDA_START_WARNINGS_SUPPRESSION
+#    define CATCH_INTERNAL_CUDA_STOP_WARNINGS_SUPPRESSION
 #endif
 
 
 #if defined(__clang__)
 
-#    define CATCH_INTERNAL_START_WARNINGS_SUPPRESSION _Pragma( "clang diagnostic push" )
-#    define CATCH_INTERNAL_STOP_WARNINGS_SUPPRESSION  _Pragma( "clang diagnostic pop" )
+#    define CATCH_INTERNAL_START_WARNINGS_SUPPRESSION \
+        _Pragma( "clang diagnostic push" )            \
+        CATCH_INTERNAL_CUDA_START_WARNINGS_SUPPRESSION
+
+#    define CATCH_INTERNAL_STOP_WARNINGS_SUPPRESSION \
+        _Pragma( "clang diagnostic pop" ) \
+        CATCH_INTERNAL_CUDA_STOP_WARNINGS_SUPPRESSION
 
 // As of this writing, IBM XL's implementation of __builtin_constant_p has a bug
 // which results in calls to destructors being emitted for each temporary,
@@ -168,8 +183,13 @@
 // Visual C++
 #if defined(_MSC_VER)
 
-#  define CATCH_INTERNAL_START_WARNINGS_SUPPRESSION __pragma( warning(push) )
-#  define CATCH_INTERNAL_STOP_WARNINGS_SUPPRESSION  __pragma( warning(pop) )
+#  define CATCH_INTERNAL_START_WARNINGS_SUPPRESSION \
+        __pragma( warning(push) ) \
+        CATCH_INTERNAL_CUDA_START_WARNINGS_SUPPRESSION
+
+#  define CATCH_INTERNAL_STOP_WARNINGS_SUPPRESSION \
+        __pragma( warning(pop) ) \
+        CATCH_INTERNAL_CUDA_STOP_WARNINGS_SUPPRESSION
 
 #  define CATCH_INTERNAL_SUPPRESS_UNUSED_WARNINGS \
      CATCH_INTERNAL_CUDA_SUPPRESS_UNUSED_WARNINGS
