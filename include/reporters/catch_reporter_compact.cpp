@@ -44,6 +44,7 @@ void printTotals(std::ostream& out, const Totals& totals) {
         out << "No tests ran.";
     } else if (totals.testCases.failed == totals.testCases.total()) {
         Colour colour(Colour::ResultError);
+        (void)colour;
         const std::string qualify_assertions_failed =
             totals.assertions.failed == totals.assertions.total() ?
             bothOrAll(totals.assertions.failed) : std::string();
@@ -59,11 +60,13 @@ void printTotals(std::ostream& out, const Totals& totals) {
             << " (no assertions).";
     } else if (totals.assertions.failed) {
         Colour colour(Colour::ResultError);
+        (void)colour;
         out <<
             "Failed " << pluralise(totals.testCases.failed, "test case") << ", "
             "failed " << pluralise(totals.assertions.failed, "assertion") << '.';
     } else {
         Colour colour(Colour::ResultSuccess);
+        (void)colour;
         out <<
             "Passed " << bothOrAll(totals.testCases.passed)
             << pluralise(totals.testCases.passed, "test case") <<
@@ -154,6 +157,7 @@ public:
 private:
     void printSourceInfo() const {
         Colour colourGuard(Colour::FileName);
+        (void)colourGuard;
         stream << result.getSourceInfo() << ':';
     }
 
@@ -161,6 +165,7 @@ private:
         if (!passOrFail.empty()) {
             {
                 Colour colourGuard(colour);
+                (void)colourGuard;
                 stream << ' ' << passOrFail;
             }
             stream << ':';
@@ -176,6 +181,7 @@ private:
             stream << ';';
             {
                 Colour colour(dimColour());
+                (void)colour;
                 stream << " expression was:";
             }
             printOriginalExpression();
@@ -192,6 +198,7 @@ private:
         if (result.hasExpandedExpression()) {
             {
                 Colour colour(dimColour());
+                (void)colour;
                 stream << " for: ";
             }
             stream << result.getExpandedExpression();
@@ -214,6 +221,7 @@ private:
 
         {
             Colour colourGuard(colour);
+            (void)colourGuard;
             stream << " with " << pluralise(N, "message") << ':';
         }
 
@@ -223,6 +231,7 @@ private:
                 printMessage();
                 if (itMessage != itEnd) {
                     Colour colourGuard(dimColour());
+                    (void)colourGuard;
                     stream << " and";
                 }
                 continue;

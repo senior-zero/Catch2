@@ -150,6 +150,7 @@ namespace Catch {
 
             void printSourceInfo() const {
                 Colour colourGuard( dimColour() );
+                (void)colourGuard;
                 stream << result.getSourceInfo() << ":";
             }
 
@@ -168,6 +169,7 @@ namespace Catch {
                     stream << ";";
                     {
                         Colour colour( dimColour() );
+                        (void)colour;
                         stream << " expression was:";
                     }
                     printOriginalExpression();
@@ -184,6 +186,7 @@ namespace Catch {
                 if( result.hasExpandedExpression() ) {
                     {
                         Colour colour( dimColour() );
+                        (void)colour;
                         stream << " for: ";
                     }
                     std::string expr = result.getExpandedExpression();
@@ -209,6 +212,7 @@ namespace Catch {
 
                 {
                     Colour colourGuard( colour );
+                    (void)colourGuard;
                     stream << " with " << pluralise( N, "message" ) << ":";
                 }
 
@@ -218,6 +222,7 @@ namespace Catch {
                         stream << " '" << itMessage->message << "'";
                         if ( ++itMessage != itEnd ) {
                             Colour colourGuard( dimColour() );
+                            (void)colourGuard;
                             stream << " and";
                         }
                         continue;

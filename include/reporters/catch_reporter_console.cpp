@@ -130,12 +130,14 @@ private:
     void printResultType() const {
         if (!passOrFail.empty()) {
             Colour colourGuard(colour);
+            (void)colourGuard;
             stream << passOrFail << ":\n";
         }
     }
     void printOriginalExpression() const {
         if (result.hasExpression()) {
             Colour colourGuard(Colour::OriginalExpression);
+            (void)colourGuard;
             stream << "  ";
             stream << result.getExpressionInMacro();
             stream << '\n';
@@ -145,6 +147,7 @@ private:
         if (result.hasExpandedExpression()) {
             stream << "with expansion:\n";
             Colour colourGuard(Colour::ReconstructedExpression);
+            (void)colourGuard;
             stream << Column(result.getExpandedExpression()).indent(2) << '\n';
         }
     }
@@ -159,6 +162,7 @@ private:
     }
     void printSourceInfo() const {
         Colour colourGuard(Colour::FileName);
+        (void)colourGuard;
         stream << result.getSourceInfo() << ": ";
     }
 
@@ -412,6 +416,7 @@ void ConsoleReporter::sectionEnded(SectionStats const& _sectionStats) {
     if (_sectionStats.missingAssertions) {
         lazyPrint();
         Colour colour(Colour::ResultError);
+        (void)colour;
         if (m_sectionStack.size() > 1)
             stream << "\nNo assertions in section";
         else
@@ -470,6 +475,7 @@ void ConsoleReporter::benchmarkEnded(BenchmarkStats<> const& stats) {
 
 void ConsoleReporter::benchmarkFailed(std::string const& error) {
 	Colour colour(Colour::Red);
+    (void)colour;
     (*m_tablePrinter)
         << "Benchmark failed (" << error << ')'
         << ColumnBreak() << RowBreak();
@@ -522,6 +528,7 @@ void ConsoleReporter::lazyPrintWithoutClosingBenchmarkTable() {
 void ConsoleReporter::lazyPrintRunInfo() {
     stream << '\n' << getLineOfChars<'~'>() << '\n';
     Colour colour(Colour::SecondaryText);
+    (void)colour;
     stream << currentTestRunInfo->name
         << " is a Catch v" << libraryVersion() << " host application.\n"
         << "Run with -? for options\n\n";
@@ -543,6 +550,7 @@ void ConsoleReporter::printTestCaseAndSectionHeader() {
 
     if (m_sectionStack.size() > 1) {
         Colour colourGuard(Colour::Headers);
+        (void)colourGuard;
 
         auto
             it = m_sectionStack.begin() + 1, // Skip first section (test case)
@@ -556,6 +564,7 @@ void ConsoleReporter::printTestCaseAndSectionHeader() {
 
     stream << getLineOfChars<'-'>() << '\n';
     Colour colourGuard(Colour::FileName);
+    (void)colourGuard;
     stream << lineInfo << '\n';
     stream << getLineOfChars<'.'>() << '\n' << std::endl;
 }
@@ -568,6 +577,7 @@ void ConsoleReporter::printOpenHeader(std::string const& _name) {
     stream << getLineOfChars<'-'>() << '\n';
     {
         Colour colourGuard(Colour::Headers);
+        (void)colourGuard;
         printHeaderString(_name);
     }
 }

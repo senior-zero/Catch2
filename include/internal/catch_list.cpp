@@ -41,6 +41,7 @@ namespace Catch {
                 ? Colour::SecondaryText
                 : Colour::None;
             Colour colourGuard( colour );
+            (void)colourGuard;
 
             Catch::cout() << Column( testCaseInfo.name ).initialIndent( 2 ).indent( 4 ) << "\n";
             if( config.verbosity() >= Verbosity::High ) {

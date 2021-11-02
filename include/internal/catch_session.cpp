@@ -156,6 +156,7 @@ namespace Catch {
 
             m_startupExceptions = true;
             Colour colourGuard( Colour::Red );
+            (void)colourGuard;
             Catch::cerr() << "Errors occurred during startup!" << '\n';
             // iterate over all exceptions and notify user
             for ( const auto& ex_ptr : exceptions ) {
