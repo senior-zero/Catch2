@@ -1,6 +1,6 @@
 /*
  *  Catch v2.13.7
- *  Generated: 2021-07-28 20:29:27.753164
+ *  Generated: 2021-11-02 13:29:54.302275
  *  ----------------------------------------------------------
  *  This file has been merged from multiple headers. Please don't edit it directly
  *  Copyright (c) 2021 Two Blue Cubes Ltd. All rights reserved.
@@ -145,6 +145,25 @@ namespace Catch {
 
 #endif
 
+// Only CUDA compiler
+#if defined(__CUDACC__)
+#    if defined(__NVCC_DIAG_PRAGMA_SUPPORT__)
+#      if defined(__clang__)
+#        define CATCH_INTERNAL_CUDA_SUPPRESS_UNUSED_WARNINGS _Pragma( "nv_diag_suppress 177" )
+#      elif defined(_MSC_VER)
+#        define CATCH_INTERNAL_CUDA_SUPPRESS_UNUSED_WARNINGS __pragma( nv_diag_suppress 177 )
+#      endif
+#    else
+#      if defined(__clang__)
+#        define CATCH_INTERNAL_CUDA_SUPPRESS_UNUSED_WARNINGS _Pragma( "diag_suppress 177" )
+#      elif defined(_MSC_VER)
+#        define CATCH_INTERNAL_CUDA_SUPPRESS_UNUSED_WARNINGS __pragma( diag_suppress 177 )
+#      endif
+#    endif
+#else
+#    define CATCH_INTERNAL_CUDA_SUPPRESS_UNUSED_WARNINGS
+#endif
+
 #if defined(__clang__)
 
 #    define CATCH_INTERNAL_START_WARNINGS_SUPPRESSION _Pragma( "clang diagnostic push" )
@@ -173,7 +192,8 @@ namespace Catch {
          _Pragma( "clang diagnostic ignored \"-Wparentheses\"" )
 
 #    define CATCH_INTERNAL_SUPPRESS_UNUSED_WARNINGS \
-         _Pragma( "clang diagnostic ignored \"-Wunused-variable\"" )
+         _Pragma( "clang diagnostic ignored \"-Wunused-variable\"" ) \
+         CATCH_INTERNAL_CUDA_SUPPRESS_UNUSED_WARNINGS
 
 #    define CATCH_INTERNAL_SUPPRESS_ZERO_VARIADIC_WARNINGS \
          _Pragma( "clang diagnostic ignored \"-Wgnu-zero-variadic-macro-arguments\"" )
@@ -242,6 +262,9 @@ namespace Catch {
 
 #  define CATCH_INTERNAL_START_WARNINGS_SUPPRESSION __pragma( warning(push) )
 #  define CATCH_INTERNAL_STOP_WARNINGS_SUPPRESSION  __pragma( warning(pop) )
+
+#  define CATCH_INTERNAL_SUPPRESS_UNUSED_WARNINGS \
+     CATCH_INTERNAL_CUDA_SUPPRESS_UNUSED_WARNINGS
 
 // Universal Windows platform does not support SEH
 // Or console colours (or console at all...)
@@ -1084,6 +1107,7 @@ struct AutoReg : NonCopyable {
     ///////////////////////////////////////////////////////////////////////////////
     #define INTERNAL_CATCH_TEMPLATE_TEST_CASE_2(TestName, TestFunc, Name, Tags, Signature, ... )\
         CATCH_INTERNAL_START_WARNINGS_SUPPRESSION \
+        CATCH_INTERNAL_SUPPRESS_UNUSED_WARNINGS \
         CATCH_INTERNAL_SUPPRESS_GLOBALS_WARNINGS \
         CATCH_INTERNAL_SUPPRESS_ZERO_VARIADIC_WARNINGS \
         CATCH_INTERNAL_SUPPRESS_UNUSED_TEMPLATE_WARNINGS \
@@ -1128,7 +1152,8 @@ struct AutoReg : NonCopyable {
 #endif
 
     #define INTERNAL_CATCH_TEMPLATE_PRODUCT_TEST_CASE2(TestName, TestFuncName, Name, Tags, Signature, TmplTypes, TypesList) \
-        CATCH_INTERNAL_START_WARNINGS_SUPPRESSION                      \
+        CATCH_INTERNAL_START_WARNINGS_SUPPRESSION \
+        CATCH_INTERNAL_SUPPRESS_UNUSED_WARNINGS \
         CATCH_INTERNAL_SUPPRESS_GLOBALS_WARNINGS                      \
         CATCH_INTERNAL_SUPPRESS_ZERO_VARIADIC_WARNINGS                \
         CATCH_INTERNAL_SUPPRESS_UNUSED_TEMPLATE_WARNINGS              \
@@ -1179,6 +1204,7 @@ struct AutoReg : NonCopyable {
     #define INTERNAL_CATCH_TEMPLATE_LIST_TEST_CASE_2(TestName, TestFunc, Name, Tags, TmplList)\
         CATCH_INTERNAL_START_WARNINGS_SUPPRESSION \
         CATCH_INTERNAL_SUPPRESS_GLOBALS_WARNINGS \
+        CATCH_INTERNAL_SUPPRESS_UNUSED_WARNINGS \
         CATCH_INTERNAL_SUPPRESS_UNUSED_TEMPLATE_WARNINGS \
         template<typename TestType> static void TestFunc();       \
         namespace {\
@@ -1208,6 +1234,7 @@ struct AutoReg : NonCopyable {
 
     #define INTERNAL_CATCH_TEMPLATE_TEST_CASE_METHOD_2( TestNameClass, TestName, ClassName, Name, Tags, Signature, ... ) \
         CATCH_INTERNAL_START_WARNINGS_SUPPRESSION \
+        CATCH_INTERNAL_SUPPRESS_UNUSED_WARNINGS \
         CATCH_INTERNAL_SUPPRESS_GLOBALS_WARNINGS \
         CATCH_INTERNAL_SUPPRESS_ZERO_VARIADIC_WARNINGS \
         CATCH_INTERNAL_SUPPRESS_UNUSED_TEMPLATE_WARNINGS \
@@ -1253,6 +1280,7 @@ struct AutoReg : NonCopyable {
 
     #define INTERNAL_CATCH_TEMPLATE_PRODUCT_TEST_CASE_METHOD_2(TestNameClass, TestName, ClassName, Name, Tags, Signature, TmplTypes, TypesList)\
         CATCH_INTERNAL_START_WARNINGS_SUPPRESSION \
+        CATCH_INTERNAL_SUPPRESS_UNUSED_WARNINGS \
         CATCH_INTERNAL_SUPPRESS_GLOBALS_WARNINGS \
         CATCH_INTERNAL_SUPPRESS_ZERO_VARIADIC_WARNINGS \
         CATCH_INTERNAL_SUPPRESS_UNUSED_TEMPLATE_WARNINGS \
@@ -1305,6 +1333,7 @@ struct AutoReg : NonCopyable {
 
     #define INTERNAL_CATCH_TEMPLATE_LIST_TEST_CASE_METHOD_2( TestNameClass, TestName, ClassName, Name, Tags, TmplList) \
         CATCH_INTERNAL_START_WARNINGS_SUPPRESSION \
+        CATCH_INTERNAL_SUPPRESS_UNUSED_WARNINGS \
         CATCH_INTERNAL_SUPPRESS_GLOBALS_WARNINGS \
         CATCH_INTERNAL_SUPPRESS_UNUSED_TEMPLATE_WARNINGS \
         template<typename TestType> \
@@ -11261,6 +11290,7 @@ namespace Catch {
                 ? Colour::SecondaryText
                 : Colour::None;
             Colour colourGuard( colour );
+            (void)colourGuard;
 
             Catch::cout() << Column( testCaseInfo.name ).initialIndent( 2 ).indent( 4 ) << "\n";
             if( config.verbosity() >= Verbosity::High ) {
@@ -13414,6 +13444,7 @@ namespace Catch {
 
             m_startupExceptions = true;
             Colour colourGuard( Colour::Red );
+            (void)colourGuard;
             Catch::cerr() << "Errors occurred during startup!" << '\n';
             // iterate over all exceptions and notify user
             for ( const auto& ex_ptr : exceptions ) {
@@ -15858,6 +15889,7 @@ void printTotals(std::ostream& out, const Totals& totals) {
         out << "No tests ran.";
     } else if (totals.testCases.failed == totals.testCases.total()) {
         Colour colour(Colour::ResultError);
+        (void)colour;
         const std::string qualify_assertions_failed =
             totals.assertions.failed == totals.assertions.total() ?
             bothOrAll(totals.assertions.failed) : std::string();
@@ -15873,11 +15905,13 @@ void printTotals(std::ostream& out, const Totals& totals) {
             << " (no assertions).";
     } else if (totals.assertions.failed) {
         Colour colour(Colour::ResultError);
+        (void)colour;
         out <<
             "Failed " << pluralise(totals.testCases.failed, "test case") << ", "
             "failed " << pluralise(totals.assertions.failed, "assertion") << '.';
     } else {
         Colour colour(Colour::ResultSuccess);
+        (void)colour;
         out <<
             "Passed " << bothOrAll(totals.testCases.passed)
             << pluralise(totals.testCases.passed, "test case") <<
@@ -15968,6 +16002,7 @@ public:
 private:
     void printSourceInfo() const {
         Colour colourGuard(Colour::FileName);
+        (void)colourGuard;
         stream << result.getSourceInfo() << ':';
     }
 
@@ -15975,6 +16010,7 @@ private:
         if (!passOrFail.empty()) {
             {
                 Colour colourGuard(colour);
+                (void)colourGuard;
                 stream << ' ' << passOrFail;
             }
             stream << ':';
@@ -15990,6 +16026,7 @@ private:
             stream << ';';
             {
                 Colour colour(dimColour());
+                (void)colour;
                 stream << " expression was:";
             }
             printOriginalExpression();
@@ -16006,6 +16043,7 @@ private:
         if (result.hasExpandedExpression()) {
             {
                 Colour colour(dimColour());
+                (void)colour;
                 stream << " for: ";
             }
             stream << result.getExpandedExpression();
@@ -16028,6 +16066,7 @@ private:
 
         {
             Colour colourGuard(colour);
+            (void)colourGuard;
             stream << " with " << pluralise(N, "message") << ':';
         }
 
@@ -16037,6 +16076,7 @@ private:
                 printMessage();
                 if (itMessage != itEnd) {
                     Colour colourGuard(dimColour());
+                    (void)colourGuard;
                     stream << " and";
                 }
                 continue;
@@ -16219,12 +16259,14 @@ private:
     void printResultType() const {
         if (!passOrFail.empty()) {
             Colour colourGuard(colour);
+            (void)colourGuard;
             stream << passOrFail << ":\n";
         }
     }
     void printOriginalExpression() const {
         if (result.hasExpression()) {
             Colour colourGuard(Colour::OriginalExpression);
+            (void)colourGuard;
             stream << "  ";
             stream << result.getExpressionInMacro();
             stream << '\n';
@@ -16234,6 +16276,7 @@ private:
         if (result.hasExpandedExpression()) {
             stream << "with expansion:\n";
             Colour colourGuard(Colour::ReconstructedExpression);
+            (void)colourGuard;
             stream << Column(result.getExpandedExpression()).indent(2) << '\n';
         }
     }
@@ -16248,6 +16291,7 @@ private:
     }
     void printSourceInfo() const {
         Colour colourGuard(Colour::FileName);
+        (void)colourGuard;
         stream << result.getSourceInfo() << ": ";
     }
 
@@ -16501,6 +16545,7 @@ void ConsoleReporter::sectionEnded(SectionStats const& _sectionStats) {
     if (_sectionStats.missingAssertions) {
         lazyPrint();
         Colour colour(Colour::ResultError);
+        (void)colour;
         if (m_sectionStack.size() > 1)
             stream << "\nNo assertions in section";
         else
@@ -16559,6 +16604,7 @@ void ConsoleReporter::benchmarkEnded(BenchmarkStats<> const& stats) {
 
 void ConsoleReporter::benchmarkFailed(std::string const& error) {
 	Colour colour(Colour::Red);
+    (void)colour;
     (*m_tablePrinter)
         << "Benchmark failed (" << error << ')'
         << ColumnBreak() << RowBreak();
@@ -16611,6 +16657,7 @@ void ConsoleReporter::lazyPrintWithoutClosingBenchmarkTable() {
 void ConsoleReporter::lazyPrintRunInfo() {
     stream << '\n' << getLineOfChars<'~'>() << '\n';
     Colour colour(Colour::SecondaryText);
+    (void)colour;
     stream << currentTestRunInfo->name
         << " is a Catch v" << libraryVersion() << " host application.\n"
         << "Run with -? for options\n\n";
@@ -16632,6 +16679,7 @@ void ConsoleReporter::printTestCaseAndSectionHeader() {
 
     if (m_sectionStack.size() > 1) {
         Colour colourGuard(Colour::Headers);
+        (void)colourGuard;
 
         auto
             it = m_sectionStack.begin() + 1, // Skip first section (test case)
@@ -16644,6 +16692,7 @@ void ConsoleReporter::printTestCaseAndSectionHeader() {
 
     stream << getLineOfChars<'-'>() << '\n';
     Colour colourGuard(Colour::FileName);
+    (void)colourGuard;
     stream << lineInfo << '\n';
     stream << getLineOfChars<'.'>() << '\n' << std::endl;
 }
@@ -16656,6 +16705,7 @@ void ConsoleReporter::printOpenHeader(std::string const& _name) {
     stream << getLineOfChars<'-'>() << '\n';
     {
         Colour colourGuard(Colour::Headers);
+        (void)colourGuard;
         printHeaderString(_name);
     }
 }
