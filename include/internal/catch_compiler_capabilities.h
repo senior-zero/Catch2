@@ -49,6 +49,27 @@
 
 #endif
 
+
+// Only CUDA compiler
+#if defined(__CUDACC__)
+#    if defined(__NVCC_DIAG_PRAGMA_SUPPORT__)
+#      if defined(__clang__)
+#        define CATCH_INTERNAL_CUDA_SUPPRESS_UNUSED_WARNINGS _Pragma( "nv_diag_suppress 177" )
+#      elif defined(_MSC_VER)
+#        define CATCH_INTERNAL_CUDA_SUPPRESS_UNUSED_WARNINGS __pragma( nv_diag_suppress 177 )
+#      endif
+#    else
+#      if defined(__clang__)
+#        define CATCH_INTERNAL_CUDA_SUPPRESS_UNUSED_WARNINGS _Pragma( "diag_suppress 177" )
+#      elif defined(_MSC_VER)
+#        define CATCH_INTERNAL_CUDA_SUPPRESS_UNUSED_WARNINGS __pragma( diag_suppress 177 )
+#      endif
+#    endif
+#else
+#    define CATCH_INTERNAL_CUDA_SUPPRESS_UNUSED_WARNINGS
+#endif
+
+
 #if defined(__clang__)
 
 #    define CATCH_INTERNAL_START_WARNINGS_SUPPRESSION _Pragma( "clang diagnostic push" )
@@ -78,7 +99,8 @@
          _Pragma( "clang diagnostic ignored \"-Wparentheses\"" )
 
 #    define CATCH_INTERNAL_SUPPRESS_UNUSED_WARNINGS \
-         _Pragma( "clang diagnostic ignored \"-Wunused-variable\"" )
+         _Pragma( "clang diagnostic ignored \"-Wunused-variable\"" ) \
+         CATCH_INTERNAL_CUDA_SUPPRESS_UNUSED_WARNINGS
 
 #    define CATCH_INTERNAL_SUPPRESS_ZERO_VARIADIC_WARNINGS \
          _Pragma( "clang diagnostic ignored \"-Wgnu-zero-variadic-macro-arguments\"" )
@@ -148,6 +170,9 @@
 
 #  define CATCH_INTERNAL_START_WARNINGS_SUPPRESSION __pragma( warning(push) )
 #  define CATCH_INTERNAL_STOP_WARNINGS_SUPPRESSION  __pragma( warning(pop) )
+
+#  define CATCH_INTERNAL_SUPPRESS_UNUSED_WARNINGS \
+     CATCH_INTERNAL_CUDA_SUPPRESS_UNUSED_WARNINGS
 
 
 // Universal Windows platform does not support SEH
